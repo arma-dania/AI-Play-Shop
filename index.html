@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]:not([hidden=until-found i]){display:none!important}img{max-width:100%}</style>
+<title>AI play shop-kataloget</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Kataloget: Swiss katalog. Én opgave pr. linje, tiden står til højre, hele linjen åbner opgaven. */
+:root{
+  --bg:#f3f4f6; --surface:#ffffff; --fg:#111318; --muted:#4b5160; --line:#d5d8de;
+  --accent:#c2410c; --on-accent:#ffffff; --focus:#1d4ed8;
+  --h1:#0f7552; --h2:#1d4ed8; --h3:#7c3aed; --h1-l:#e3f3ec; --h2-l:#e4ebfb; --h3-l:#efe7fc;
+  --veil:rgba(17,19,24,.45);
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif; --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#101217; --surface:#181b22; --fg:#eef0f4; --muted:#a8aebb; --line:#2c313b;
+    --accent:#fb8a4c; --on-accent:#16110c; --focus:#8ab4ff;
+    --h1:#4fd1a2; --h2:#86a8ff; --h3:#c3a0ff; --h1-l:#123227; --h2-l:#18243f; --h3-l:#281c3e; --veil:rgba(0,0,0,.6); color-scheme:dark;}
+}
+:root[data-theme="dark"]{
+  --bg:#101217; --surface:#181b22; --fg:#eef0f4; --muted:#a8aebb; --line:#2c313b;
+  --accent:#fb8a4c; --on-accent:#16110c; --focus:#8ab4ff;
+  --h1:#4fd1a2; --h2:#86a8ff; --h3:#c3a0ff; --h1-l:#123227; --h2-l:#18243f; --h3-l:#281c3e; --veil:rgba(0,0,0,.6); color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.55;font-size:16px;margin:0}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+h1,h2{font-stretch:118%;font-weight:850;letter-spacing:-.01em}
+h3{font-weight:700}
+button{font:inherit;cursor:pointer;color:inherit}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.etiket{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Hoved */
+header.top{padding-block:28px 10px}
+.katalog-hoved{display:grid;gap:14px;border-top:6px solid var(--fg);padding-top:14px}
+.kat-linje{display:flex;justify-content:space-between;gap:4px 12px;flex-wrap:wrap;font-family:var(--mono);font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+h1{font-size:clamp(2.6rem,11vw,6rem);line-height:.92;text-transform:uppercase}
+.stempel{display:inline-flex;border:2px solid var(--fg);font-family:var(--mono);font-size:.85rem;font-weight:700;justify-self:start;flex-wrap:wrap}
+.stempel span{padding:6px 10px;border-right:2px solid var(--fg)}
+.stempel span:last-child{border-right:0;background:var(--accent);color:var(--on-accent)}
+.lead{max-width:62ch;color:var(--muted);margin:0;font-size:1.05rem}
+
+/* Filterbar */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;gap:10px;padding-block:10px}
+.faner{display:flex;gap:6px;overflow-x:auto;flex:1;scrollbar-width:none;min-width:0}
+.faner::-webkit-scrollbar{display:none}
+.fane{border:1.5px solid var(--line);background:var(--surface);color:var(--fg);padding:8px 14px;min-height:44px;font-weight:700;font-size:.9rem;white-space:nowrap;display:inline-flex;gap:7px;align-items:center}
+.fane .prik{width:10px;height:10px}
+.fane[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+@media (max-width:620px){.fane .lang{display:none}}
+
+/* Info */
+.info{display:grid;gap:14px;grid-template-columns:minmax(0,1fr);margin:22px 0 8px}
+@media (min-width:860px){.info{grid-template-columns:1.1fr 1fr 1fr}}
+.boks{background:var(--surface);border:1.5px solid var(--fg);padding:18px;min-width:0}
+.boks h2{font-size:1.15rem;margin-bottom:10px}
+.boks ul{margin:0;padding-left:1.2em;display:grid;gap:6px}
+.hylder-oversigt{display:grid;gap:10px}
+.hylder-oversigt div{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:baseline}
+.hylder-oversigt b{grid-row:span 2;font-family:var(--display);font-size:.95rem;padding:3px 9px;background:var(--hc);color:var(--bg)}
+.hylder-oversigt span{font-size:.92rem}
+.hylder-oversigt small{color:var(--muted)}
+.rkmf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.rkmf div{background:var(--bg);padding:10px;min-width:0}
+.rkmf b{font-family:var(--display);font-size:1.5rem;display:block;line-height:1;color:var(--accent)}
+.rkmf strong{display:block;font-size:.9rem}
+.rkmf span{font-size:.82rem;color:var(--muted);overflow-wrap:anywhere;hyphens:auto}
+
+/* Hylder */
+.hylde{margin:40px 0 0}
+.hylde-top{border-top:2px solid var(--fg);padding-top:10px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 16px;align-items:start;margin-bottom:12px}
+.hylde-top .stortal{font-family:var(--display);font-stretch:125%;font-weight:900;font-size:clamp(3rem,10vw,5rem);line-height:.85;color:var(--hc);grid-row:span 3}
+.hylde-top h2{font-size:clamp(1.5rem,4vw,2rem)}
+.hylde-top .meta{color:var(--muted);font-size:.95rem;max-width:62ch;margin:4px 0 0}
+.tip{font-size:.92rem;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);padding:10px 14px;margin:0 0 12px;max-width:80ch}
+
+/* Linjer: hele linjen er ét klikområde */
+.liste{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.vare{position:relative;border-bottom:1px solid var(--line);display:grid;grid-template-columns:3.2rem minmax(0,1fr);grid-template-areas:"nr titel" "nr maal" "nr fakta" "nr tid";gap:6px 12px;padding:16px 4px 16px 0;transition:background .15s}
+.vare:hover{background:var(--hl)}
+.vare:has(.aabn:focus-visible){background:var(--hl)}
+.vare .nr{grid-area:nr;font-family:var(--mono);font-weight:700;font-size:1.1rem;color:var(--hc);padding-top:2px}
+.vare h3{grid-area:titel;font-size:1.15rem}
+.aabn{all:unset;cursor:pointer}
+.aabn::after{content:"";position:absolute;inset:0}
+.aabn:focus-visible{outline:none}
+.vare:has(.aabn:focus-visible){outline:3px solid var(--focus);outline-offset:-3px}
+.vare .maal{grid-area:maal;margin:0;font-size:.93rem;color:var(--muted)}
+.vare .fakta{grid-area:fakta;display:flex;gap:6px;flex-wrap:wrap}
+.vare .fakta span{font-size:.78rem;border:1px solid var(--line);color:var(--muted);padding:2px 8px;font-weight:600}
+.vare .fakta .flere{border-color:var(--hc);color:var(--fg)}
+.vare .slut{grid-area:tid;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.vare .tid{font-family:var(--mono);font-weight:700;color:var(--accent);font-size:1rem;white-space:nowrap;font-variant-numeric:tabular-nums}
+.vare .se{font-weight:700;font-size:.9rem;white-space:nowrap;display:inline-flex;gap:6px;align-items:center}
+.vare .se svg{transition:transform .15s}
+.vare:hover .se svg{transform:translateX(3px)}
+.maerke{display:inline-block;vertical-align:middle;font-family:var(--body);font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;background:var(--accent);color:var(--on-accent);padding:2px 7px;margin-left:6px;transform:translateY(-2px)}
+.maerke.opd{background:var(--fg);color:var(--bg)}
+@media (min-width:860px){
+  .vare{grid-template-columns:4.5rem minmax(0,1.4fr) minmax(0,1fr) 11rem;grid-template-areas:"nr titel fakta tid" "nr maal fakta tid";align-items:start;padding:18px 8px 18px 0}
+  .vare .fakta{align-content:flex-start}
+  .vare .slut{flex-direction:column;align-items:flex-end;gap:6px}
+  .vare .tid{font-size:1.25rem}
+}
+
+/* Dialog */
+.slor{position:fixed;inset:0;background:var(--veil);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+.slor.aaben{opacity:1;pointer-events:auto}
+.ark{position:fixed;z-index:50;background:var(--surface);color:var(--fg);box-shadow:0 -10px 40px rgba(0,0,0,.25);left:0;right:0;bottom:0;max-height:92%;border-top:6px solid var(--hc);transform:translateY(105%);transition:transform .25s ease;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
+.ark.aaben{transform:none}
+@media (min-width:860px){
+  .ark{left:50%;right:auto;bottom:auto;top:50%;width:min(780px,92vw);max-height:88%;transform:translate(-50%,-46%);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+  .ark.aaben{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
+}
+.ark-hoved{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px 12px;border-bottom:1px solid var(--line)}
+.ark-hoved h2{font-size:1.45rem}
+.luk{border:1.5px solid var(--line);background:var(--bg);color:var(--fg);width:44px;height:44px;font-size:1.3rem;line-height:1;flex:none}
+.ark-krop{padding:16px 20px 24px;overflow-y:auto;display:grid;gap:18px}
+.ark-krop h3{font-size:1rem;font-family:var(--body);font-weight:700;margin-bottom:4px}
+.ark-krop p{margin:0}
+.ark-krop ol{margin:0;padding-left:1.3em;display:grid;gap:6px}
+.faktalinje{display:flex;flex-wrap:wrap;gap:6px}
+.faktalinje span{font-size:.82rem;border:1px solid var(--line);padding:3px 9px;font-weight:600}
+.faktalinje .t{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-family:var(--mono)}
+.prompt-blok{display:grid;gap:6px}
+.prompt-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.prompt{background:var(--bg);border:1px dashed var(--hc);padding:14px;font-size:.95rem;white-space:pre-wrap;overflow-wrap:anywhere}
+.btn{border:1.5px solid var(--fg);background:var(--surface);color:var(--fg);padding:9px 14px;min-height:44px;font-weight:700;font-size:.92rem;font-family:var(--body)}
+.btn:hover{background:var(--fg);color:var(--bg)}
+.eksempel{display:inline-flex;gap:8px;align-items:center;font-weight:700;text-underline-offset:3px}
+.videre{background:var(--hl);padding:12px 14px}
+.videre button{border:0;background:none;padding:0;text-decoration:underline;font-weight:700}
+.toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translate(-50%,-40px);background:var(--fg);color:var(--bg);padding:10px 16px;font-weight:600;z-index:60;opacity:0;transition:.2s;pointer-events:none;max-width:90vw}
+.toast.vis{opacity:1;transform:translate(-50%,0)}
+
+.afrunding{margin:40px 0 30px;display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:860px){.afrunding{grid-template-columns:1fr 1fr}}
+.afrunding .boks p{margin:0 0 10px}
+.tjek{list-style:none;padding:0!important}
+.tjek li{display:flex;gap:10px;align-items:flex-start}
+.tjek input{width:20px;height:20px;margin-top:2px;accent-color:var(--accent);flex:none}
+footer{color:var(--muted);font-size:.85rem;padding-bottom:40px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap"><header class="top">
+  <div class="katalog-hoved">
+    <div class="kat-linje"><span>Katalog nr. 1 · AI-eftermiddag</span><span>Markedsføringsøkonom og Serviceøkonom · Dania</span></div>
+    <h1>AI play shop</h1>
+    <div class="stempel"><span id="antalVarer">18 opgaver</span><span>3 niveauer</span></div>
+    <p class="lead" id="lead"></p>
+  </div>
+</header></div>
+
+<nav class="bar" aria-label="Niveauer">
+  <div class="wrap"><div class="faner" id="faner" role="group" aria-label="Vis niveau"></div></div>
+</nav>
+
+<main class="wrap">
+  <section class="info" aria-label="Før du går i gang">
+    <div class="boks"><h2>Sådan vælger du</h2><div class="hylder-oversigt" id="hylderOversigt"></div></div>
+    <div class="boks"><h2>Spilleregler for dagen</h2><ul id="regler"></ul></div>
+    <div class="boks"><h2>Den gode prompt: RKMF</h2><div class="rkmf" id="rkmf"></div></div>
+  </section>
+  <div id="hylder"></div>
+  <section class="afrunding" aria-label="Afrunding">
+    <div class="boks"><h2>Afrunding</h2>
+      <p>De sidste 30 minutter deler vi: hver viser ét resultat og én prompt, der virkede, på højst 2 minutter. De bedste prompts samles i et fælles dokument.</p>
+      <ul id="opsamling"></ul></div>
+    <div class="boks"><h2>Facilitatorens tjekliste</h2><ul class="tjek" id="tjekliste"></ul></div>
+  </section>
+  <footer>Bygget på opgavebanken "AI-eftermiddag: Opgavebank i tre niveauer". Tjeklisten huskes kun i din egen browser.</footer>
+</main>
+
+<div class="slor" id="slor"></div>
+<section class="ark" id="vareArk" role="dialog" aria-modal="true" aria-labelledby="vareTitel" hidden>
+  <div class="ark-hoved"><div><span class="etiket" id="vareEtiket"></span><h2 id="vareTitel"></h2></div><button class="luk" id="luk" aria-label="Luk">×</button></div>
+  <div class="ark-krop" id="vareKrop"></div>
+</section>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+// Poul (skribent): alt indhold. Bygger på "AI-eftermiddag: Opgavebank i tre niveauer" (29.10) med Arnes justeringer.
+const NIVEAUER = [
+  {n:1, navn:"Kom godt i gang", hylde:"Niveau 1", til:"har brugt AI lidt eller slet ikke", tid:"15–30 min", output:"Tekst, plan, quiz, case, infografik",
+   intro:"Her bliver du tryg ved at skrive til AI, vurdere svaret og bede om forbedringer. Det meste foregår i chatten, og det, du får ud, kan du kopiere videre."},
+  {n:2, navn:"Øvet", hylde:"Niveau 2", til:"bruger AI jævnligt i chatten", tid:"30–60 min", output:"Dokument, regneark, rollespil, transskription",
+   intro:"Her arbejder du med dine egne materialer, flere runder af forbedring og output i rigtige filformater."},
+  {n:3, navn:"Avanceret", hylde:"Niveau 3", til:"vil bygge noget, de studerende kan bruge", tid:"60–120 min", output:"Interaktiv webside, spil, simulation",
+   intro:"Her bygger du interaktive ressourcer, som de studerende bruger direkte i browseren. Du skal ikke kunne kode. Du skal kunne beskrive præcist, hvad du vil have, teste og give AI fejlbeskrivelser tilbage.",
+   tip:"Claude (artifacts), ChatGPT (Canvas) og Gemini (Canvas) kan vise websider direkte i chatten. Byg i små skridt: først en simpel version, så én forbedring ad gangen. Beskriv fejl konkret: \"Når jeg sætter renten til 0, viser grafen ingenting.\""}
+];
+
+const OPGAVER = [
+  {id:"1.1", n:1, titel:"Lektionsplan til én undervisningsgang", min:20, tid:"20 min", output:"Dokument (Word)", vaerktoej:"Alle værktøjer",
+   maal:"Du får en færdig plan for én undervisningsgang med tider, aktiviteter og materialer.",
+   trin:["Vælg en kommende lektion, f.eks. segmentering, dækningsbidrag eller servicemødet.","Brug startprompten og ret den til dit hold.","Bed om én forbedring: mere aktiverende, kortere oplæg eller en ekstra pause."],
+   prompt:"Du er underviser på markedsføringsøkonomuddannelsen, 1. semester. Lav en plan for en undervisningsgang på 3 × 45 min om [emne]. De studerende skal bagefter kunne [læringsmål]. Planen skal indeholde tidsplan, aktiviteter med varierende arbejdsformer, og hvilke materialer jeg skal forberede. Sæt den op som en tabel.",
+   videre:"Opgave 2.1 udvider planen til en hel temadag.", ref:["2.1"]},
+  {id:"1.2", n:1, titel:"Quiz til opstart eller afrunding", min:15, tid:"15 min", output:"Quiz til Moodle eller AhaSlides", vaerktoej:"Alle værktøjer", ny:"Moodle og AhaSlides",
+   maal:"Du har en quiz med 10 spørgsmål og forklaringer klar til næste time.",
+   trin:["Vælg et emne, f.eks. prisstrategier, SERVQUAL eller break-even.","Bed om plausible forkerte svar, der rammer typiske misforståelser.","Bed AI om at sætte quizzen op i GIFT-format, som du kan importere i Moodle (Spørgsmålsbank > Importér > GIFT), eller som en tabel, du kan kopiere ind i AhaSlides' Excel-skabelon (Import-ikonet ved New slide > Import spreadsheet)."],
+   prompt:"Lav 10 multiple choice-spørgsmål om [emne] til studerende på 2. semester. Hvert spørgsmål skal have 4 svarmuligheder, hvor de forkerte svar afspejler typiske misforståelser. Angiv det rigtige svar og en kort forklaring. Sværhedsgraden skal stige gennem quizzen. Sæt til sidst spørgsmålene op i GIFT-format med feedback til hvert svar, så jeg kan importere dem i Moodle.",
+   videre:"Opgave 3.3 gør quizzen til et digitalt spil.", ref:["3.3"]},
+  {id:"1.3", n:1, titel:"Fiktiv virksomhedscase", min:20, tid:"20 min", output:"Dokument", vaerktoej:"Alle værktøjer",
+   maal:"Du har en realistisk dansk case med tal og spørgsmål, som de studerende kan arbejde med.",
+   trin:["Beskriv branche, størrelse og problemstilling, f.eks. et hotel i Roskilde med faldende kundetilfredshed.","Bed om 4–6 arbejdsspørgsmål, der passer til dine læringsmål.","Bed om en lærervejledning med løsningsforslag."],
+   prompt:"Skriv en case på ca. 1 side om en fiktiv dansk [branche]-virksomhed med [antal] ansatte. Virksomheden står over for [problem]. Inkludér nøgletal, en kort historik og citater fra en kunde og en medarbejder. Afslut med 5 arbejdsspørgsmål til serviceøkonomstuderende om [fagligt emne]. Lav bagefter en kort lærervejledning med løsningsforslag.",
+   videre:"Opgave 2.4 laver et tilhørende datasæt, og opgave 3.6 gør casen interaktiv.", ref:["2.4","3.6"]},
+  {id:"1.4", n:1, titel:"Forklar et svært begreb på tre måder", min:15, tid:"15 min", output:"Tekst", vaerktoej:"Alle værktøjer",
+   maal:"Du får nye vinkler på et begreb, de studerende plejer at have svært ved.",
+   trin:["Vælg et begreb, f.eks. priselasticitet, dækningsgrad, NPS eller kundens livstidsværdi.","Bed om tre forklaringer og en liste over typiske misforståelser.","Vurder: Hvilken forklaring ville virke på dit hold? Hvad er forkert eller upræcist?"],
+   prompt:"Forklar [begreb] på tre måder: 1) som til en gymnasieelev, 2) med et konkret eksempel fra en dansk detailvirksomhed, 3) med en analogi fra hverdagen. Nævn derefter de 3 mest almindelige misforståelser, studerende har om begrebet, og giv mig et spørgsmål, der afslører hver af dem.",
+   videre:"Opgave 3.2 gør begrebet til en simulation, de studerende kan eksperimentere med.", ref:["3.2"]},
+  {id:"1.5", n:1, titel:"Læringsmål i studerendesprog", min:15, tid:"15 min", output:"Tekst til Moodle", vaerktoej:"Alle værktøjer",
+   maal:"Læringsmål fra studieordningen bliver forståelige og konkrete for de studerende.",
+   trin:["Kopiér læringsmålene for et fagelement fra studieordningen (offentlig tekst, så alle værktøjer kan bruges).","Bed om en omskrivning til \"Når forløbet er slut, kan du …\" med eksempler.","Bed om en tjekliste, de studerende kan bruge til selvevaluering."],
+   prompt:"Her er læringsmålene for [fagelement]: [indsæt]. Omskriv dem til et sprog, en studerende på 1. semester forstår. Brug formen \"Når forløbet er slut, kan du …\" og giv et konkret eksempel på hvert mål. Lav til sidst en tjekliste til selvevaluering med en skala fra 1 til 4.",
+   videre:"Opgave 2.3 bruger målene til en bedømmelsesrubric.", ref:["2.3"]},
+  {id:"1.6", n:1, titel:"Infografik over en model", min:25, tid:"25 min", output:"Infografik (PNG eller PDF)", vaerktoej:"Napkin AI eller Canva, plus en chat-AI", ny:"Ny opgave",
+   maal:"Du har en infografik, der viser en model eller proces fra dit fag på én side, klar til slides eller Moodle.",
+   trin:["Vælg en model eller proces, f.eks. AIDA, GAP-modellen, købsprocessen eller opbygningen af en resultatopgørelse.","Bed en chat-AI om en kort, struktureret tekst med startprompten.","Indsæt teksten i Napkin AI (napkin.ai, gratis plan med vandmærke) eller Canva, og vælg en visualisering. Tjek stavning og faglighed, før du deler den."],
+   prompt:"Skriv teksten til en infografik om [model eller proces] til markedsføringsøkonomstuderende på 1. semester. Format: en overskrift på højst 6 ord, én indledende sætning og 4–6 trin eller elementer, hver med en kort titel og én forklarende sætning. Afslut med ét konkret eksempel fra en dansk virksomhed.",
+   tip:"AI-billedgeneratorer staver ofte forkert, især på dansk. Lad derfor Napkin eller Canva sætte teksten, eller bed Claude eller ChatGPT om at bygge infografikken som en webside.",
+   videre:"Opgave 3.4 viser modellen trin for trin som en animation.", ref:["3.4"]},
+
+  {id:"2.1", n:2, titel:"Plan for en hel temadag", min:45, tid:"45 min", output:"Dokument (undervisningsplan)", vaerktoej:"Alle; Claude og ChatGPT er stærkest til lange planer",
+   maal:"Du har en færdig plan for en temadag med aktiviteter, materialeliste og opgavebeskrivelse til de studerende.",
+   trin:["Lad AI interviewe dig først. Så får den den kontekst, du ellers glemmer.","Bed om en plan med tider, arbejdsformer, materialer og en opgavebeskrivelse til de studerende.","Bed AI om at kritisere sin egen plan som en erfaren kollega og lave en forbedret version."],
+   prompt:"Jeg skal planlægge en temadag (kl. 9–15) om [emne] for [hold, semester]. Stil mig 5 spørgsmål, ét ad gangen, før du laver planen. Planen skal veksle mellem oplæg, gruppearbejde og præsentation og slutte med et produkt, de studerende afleverer.",
+   videre:"Opgave 3.5 gør planen til et website for forløbet.", ref:["3.5"]},
+  {id:"2.2", n:2, titel:"Studiemateriale fra dine egne filer", min:30, tid:"30 min", output:"Studiespørgsmål, flashcards, evt. podcast", vaerktoej:"NotebookLM, Copilot eller Claude Projects",
+   maal:"Du har studiemateriale bygget på præcis den tekst, dine studerende læser.",
+   trin:["Upload egne slides, egne noter eller offentlige rapporter. Brug ikke ophavsretsbeskyttede bøger i offentlige værktøjer.","Bed om studiespørgsmål på tre niveauer: genkald, forståelse og anvendelse.","Prøv NotebookLM's lydoversigt eller bed om 20 flashcards."],
+   prompt:"Ud fra de vedhæftede materialer: Lav 12 studiespørgsmål fordelt på tre niveauer (genkald, forståelse, anvendelse på en case). Henvis til hvilken del af materialet, hvert svar findes i. Lav derefter 20 flashcards med begreb på forsiden og forklaring plus eksempel på bagsiden.",
+   videre:"Opgave 2.6 gør en optaget forelæsning til tekst, du kan bruge som materiale her.", ref:["2.6"]},
+  {id:"2.3", n:2, titel:"Rubric og feedback til en eksamensopgave", min:45, tid:"45 min", output:"Dokument eller regneark", vaerktoej:"Alle værktøjer",
+   maal:"Du har en bedømmelsesrubric og har testet den på en fiktiv besvarelse.",
+   trin:["Indsæt opgaveformulering og læringsmål.","Bed om en rubric med 4–5 kriterier og 4 niveauer.","Bed AI om at skrive en fiktiv middelgod besvarelse og vurdere den ud fra rubricen. Passer vurderingen med din egen?"],
+   prompt:"Her er en opgaveformulering og de tilhørende læringsmål: [indsæt]. Lav en bedømmelsesrubric som tabel med 4–5 kriterier og fire niveauer (ikke opfyldt, delvist, tilfredsstillende, fremragende). Beskriv hvert niveau med observerbar adfærd. Skriv derefter en fiktiv besvarelse på middelniveau og giv den feed-forward ud fra rubricen.",
+   videre:"Læg rubricen ind som bedømmelsesvejledning på opgaven i Moodle, så de studerende kan se den fra start."},
+  {id:"2.4", n:2, titel:"Realistisk datasæt til øvelser", min:40, tid:"40 min", output:"Regneark (.xlsx/.csv)", vaerktoej:"ChatGPT, Claude eller Copilot i Excel",
+   maal:"Du har et fiktivt datasæt med indbyggede mønstre, som de studerende kan opdage.",
+   trin:["Beslut, hvad de studerende skal finde: sæsonudsving, en sammenhæng mellem pris og salg, eller forskel på kundesegmenter.","Bed om datasættet som downloadbar fil og om de mønstre, der er lagt ind.","Lav 5 opgaver til datasættet og tjek selv, at mønstrene faktisk kan findes."],
+   prompt:"Lav et fiktivt datasæt for en dansk webshop med 500 ordrer fra 2025. Kolonner: dato, kundesegment, produktkategori, pris, rabat, antal, kundetilfredshed (1–5). Byg disse mønstre ind: [f.eks. højere salg i november, lavere tilfredshed ved levering over 3 dage]. Lever det som en Excel-fil og skriv en lærerversion, der forklarer mønstrene.",
+   videre:"Opgave 3.2 lader de studerende eksperimentere med pris og afsætning i en interaktiv simulation.", ref:["3.2"]},
+  {id:"2.5", n:2, titel:"AI som rollespilspartner", min:40, tid:"40 min", output:"Instruktionsprompt til de studerende", vaerktoej:"Alle værktøjer",
+   maal:"De studerende kan træne en svær samtale med AI, f.eks. en utilfreds kunde eller en hård indkøber.",
+   trin:["Beskriv personen, situationen og hvad den studerende skal øve.","Lad AI skrive instruktionsprompten, og test den selv som studerende.","Tilføj, at AI giver feedback ud fra en model (f.eks. LEAP eller SPIN) efter samtalen."],
+   prompt:"Skriv en prompt, som mine serviceøkonomstuderende kan indsætte i en AI-chat. AI'en skal spille [en utilfreds hotelgæst, der har fået det forkerte værelse]. Den skal starte irriteret og først falde til ro, hvis den studerende lytter, anerkender og tilbyder en løsning. Når den studerende skriver STOP, skal AI'en give feedback ud fra [model].",
+   videre:"Opgave 3.6 gør samtalen til en interaktiv case, hvor valgene har konsekvenser.", ref:["3.6"]},
+  {id:"2.6", n:2, titel:"Transskribér og rens en lydoptagelse i Word", min:45, tid:"45 min", output:"Renskrevet Word-dokument med resumé", vaerktoej:"Word (Transskriber) og Copilot Chat", ny:"Ny opgave",
+   maal:"En optagelse, f.eks. en forelæsning, et oplæg eller et interview med en virksomhed, bliver til ren, læsbar tekst med overskrifter, resumé og studiespørgsmål.",
+   trin:["Medbring en optagelse på 10–15 minutter. Åbn Word på nettet i Edge eller Chrome. Vælg Hjem > pilen ved Diktér > Transskriber, vælg dansk som sprog, og upload en lydfil (.mp3, .m4a, .wav eller .mp4) eller optag direkte.","Ret talernavnene i ruden, og vælg Tilføj til dokument, med eller uden talere og tidsstempler.","Kopiér teksten ind i Copilot Chat (eller brug Copilot i Word, hvis du har licens), og rens den med startprompten. Sammenlign med optagelsen 2–3 steder, især ved fagord og tal."],
+   prompt:"Her er en automatisk transskription af [en forelæsning om emne]. Rens teksten: fjern fyldord, gentagelser og afbrudte sætninger, ret fejlhørte fagord (emnet er [emne], så forvent begreber som [begreb 1, begreb 2]), og del teksten i afsnit med overskrifter. Behold talerens betydning og formuleringer, hvor det er muligt. Markér med [?] de steder, hvor du er usikker. Lav til sidst et resumé på 5 punkter og 3 studiespørgsmål.",
+   tip:"Brug din Dania-konto: lydfilen gemmes i din OneDrive i mappen Transcribed Files. Optag ikke studerende uden samtykke. Med en Microsoft 365-konto kan du uploade 300 minutter om måneden.",
+   videre:"Brug den rensede tekst som materiale i opgave 2.2, eller gå op på niveau 3.", ref:["2.2"]},
+
+  {id:"3.1", n:3, titel:"Låneberegner", min:60, tid:"60 min", output:"Interaktiv webside", vaerktoej:"Claude, ChatGPT eller Gemini",
+   maal:"De studerende kan se, hvordan rente, løbetid og lånetype påvirker ydelse og samlede renteomkostninger.",
+   trin:["Byg en beregner med skydere for hovedstol, rente og løbetid.","Tilføj sammenligning af annuitets- og serielån og en amortiseringstabel.","Tilføj en graf og 3 opgaver, de studerende skal løse med beregneren."],
+   prompt:"Byg en interaktiv låneberegner som én HTML-side på dansk. Skydere for hovedstol (10.000–5.000.000 kr.), årlig rente (0–10 %) og løbetid (1–30 år). Vis månedlig ydelse og samlede renteomkostninger for både annuitetslån og serielån side om side, en graf over restgæld og en amortiseringstabel. Brug et rent, moderne design.",
+   videre:"Prøv samme fremgangsmåde med en investeringsberegner (kapitalværdi og intern rente)."},
+  {id:"3.2", n:3, titel:"Simulation af pris og efterspørgsel", min:75, tid:"60–90 min", output:"Interaktiv webside", vaerktoej:"Claude, ChatGPT eller Gemini",
+   maal:"De studerende eksperimenterer med pris, variable omkostninger og elasticitet og ser effekten på afsætning, dækningsbidrag og break-even.",
+   trin:["Beskriv modellen: lineær afsætningsfunktion, faste og variable omkostninger.","Bed om skydere og grafer, der opdateres live, og markering af den optimale pris.","Tilføj en \"udfordring\": find den pris, der maksimerer dækningsbidraget, uden at kigge på markeringen."],
+   prompt:"Byg en interaktiv HTML-simulation på dansk til markedsføringsøkonomstuderende. Brugeren styrer pris, variable enhedsomkostninger, faste omkostninger og efterspørgslens hældning med skydere. Vis afsætning, omsætning, dækningsbidrag og resultat, en graf over dækningsbidrag som funktion af pris og break-even-punktet. Tilføj en knap, der skjuler eller viser den optimale pris.",
+   videre:"Byg en tilsvarende simulation til et serviceemne, f.eks. kapacitet og ventetid i en reception."},
+  {id:"3.3", n:3, titel:"Digitalt escape room", min:75, tid:"60–90 min", output:"Interaktiv webside (spil)", vaerktoej:"Claude, ChatGPT eller Gemini",
+   maal:"De studerende repeterer et emne gennem et spil med 5 rum, hvor hver gåde kræver faglig viden.",
+   trin:["Vælg emne, f.eks. GAP-modellen, marketingmixet eller nøgletal.","Bed om en fortælling, 5 gåder med koder og hints, og en timer.","Test spillet selv, og ret gåder, der er for lette, for svære eller fagligt upræcise."],
+   prompt:"Byg et digitalt escape room som én HTML-side på dansk om [emne]. Fortælling: de studerende er konsulenter, der skal redde en virksomhed i krise. 5 rum med hver sin faglige gåde, hvor svaret er en kode. Hint-knap i hvert rum, en 30-minutters timer og en slutskærm med samlet tid. Design: mørkt, spændende tema.",
+   videre:"Lad holdet selv bygge et escape room til et andet hold som eksamensforberedelse."},
+  {id:"3.4", n:3, titel:"Animeret forklaring", min:60, tid:"60 min", output:"Animation på en webside", vaerktoej:"Claude, ChatGPT eller Gemini",
+   maal:"Et abstrakt forløb bliver vist trin for trin, f.eks. rentes rente, kundens rejse eller pengestrømme i et regnskab.",
+   trin:["Skriv et kort manuskript: hvilke trin, hvilken tekst og hvilken rækkefølge.","Bed om en animation med knapper til afspil, pause og trin frem.","Optag evt. skærmen med din egen speak, så det bliver en kort video til Moodle."],
+   prompt:"Lav en animeret forklaring som én HTML-side på dansk af [emne, f.eks. hvordan rentes rente får 10.000 kr. til at vokse over 30 år]. Animationen skal have 5 trin med en kort tekst ved hvert trin, knapper til afspil, pause og trin frem/tilbage, og rolige, tydelige overgange.",
+   videre:"Indsæt animationen på forløbets website fra opgave 3.5.", ref:["3.5"]},
+  {id:"3.5", n:3, titel:"Website for et helt forløb", min:105, tid:"90–120 min", output:"Delbart website", vaerktoej:"Claude eller ChatGPT", ny:"Opdateret",
+   maal:"Dine studerende har ét sted med forløbsplan, materialer, opgaver, quiz og links.",
+   trin:["Vælg prompt: A tager udgangspunkt i en forløbsplan, B i dine egne PowerPoint-præsentationer.", "Ved prompt B: vedhæft 1–5 præsentationer. Gem dem gerne som PDF, så AI også kan se figurerne.", "Byg i etaper: først menu, forside og ét afsnit, derefter ét afsnit ad gangen. Beskriv fejl konkret.", "Publicér og del linket, eller indlejr siden i Moodle."],
+   prompt:"Byg et website på dansk for forløbet [titel] på [uddannelse, semester]. Brug denne forløbsplan: [indsæt]. Siden skal have en forside med læringsmål, en sektion pr. uge med aktiviteter, materialer og afleveringer, en quiz med 8 spørgsmål med feedback, og en side med ofte stillede spørgsmål. Mobilvenlig og med Danias farver [angiv farvekoder].",
+   prompts:[{"navn": "Prompt A · Fra forløbsplan", "tekst": "Byg et website på dansk for forløbet [titel] på [uddannelse, semester]. Brug denne forløbsplan: [indsæt]. Siden skal have en forside med læringsmål, en sektion pr. uge med aktiviteter, materialer og afleveringer, en quiz med 8 spørgsmål med feedback, og en side med ofte stillede spørgsmål. Mobilvenlig og med Danias farver [angiv farvekoder]."},{"navn": "Prompt B · Fra egne PowerPoints", "tekst": "Byg et undervisningswebsite på dansk til forløbet [titel] på [uddannelse, semester] ud fra mine vedhæftede PowerPoint-præsentationer. Brug kun det faglige indhold fra mine slides. Opfind ikke tal, kilder eller eksempler, og skriv [TJEK], hvor slides er uklare.\n\nSiden skal være ét samlet opslagsværk, som de studerende bruger gennem hele forløbet, i samme stil som https://konjunkturvurdering.netlify.app.\n\nOpbygning\n1. Topbar med sidens titel og et hus-ikon, der fører til forsiden, en Søg-knap og en \"I dag\"-knap, der springer til dagens opgavekort.\n2. En nummereret hovedmenu (1 Introduktion, 2 …) med ét punkt pr. emne i mine slides, i forløbets rækkefølge. Under hovedmenuen en række faner med emnets undersider. Næste- og Forrige-knapper nederst på hver side.\n3. Forside: en lille linje med uddannelse · fag · forløb, en stor overskrift, en indledning på 3–4 linjer om, hvad de studerende lærer, og hvilket spørgsmål forløbet besvarer, og en mørk figurboks med forløbets centrale model som interaktiv figur.\n4. Et dagskort \"Fortsæt, hvor I slap\" med en fane for hver undervisningsdag, dagens emne, et link til opgavekortet og en tæller \"x af y krydset af\".\n5. \"Overblik på ét minut\": en animation i 4–6 scener med en knap til hver scene, der går fra grundbegrebet til den færdige analyse.\n6. \"Sådan er siden bygget op\": en nummereret oversigt over alle afsnit med én sætning og underpunkterne for hvert afsnit.\n7. Introduktion: om casen [virksomhed eller case], forløbet dag for dag (mål, lektionsplan og opgavekort) og et glossar over fagbegreberne.\n8. Indholdssider med bokse i fire faste roller, hver med sin farve: Forklaring og huskeregler, Eksempel, Guide trin for trin og Valgfri fordybelse.\n9. Opgavekort med tips og afkrydsning, der huskes i browseren.\n10. Figurer og modeller fra mine slides tegnet om som rene, interaktive grafer og diagrammer. Animationer ligger i lukkede bokse, der kan foldes ud.\n\nStil\n- Lys sandfarvet baggrund, mørk marineblå til tekst og figurbokse, en dyb vinrød accent til markeringer og knapper og en klar blå til grafer.\n- Elegant serif til overskrifter, en læsevenlig serif til brødtekst og monospace med versaler til menu, etiketter og tal.\n- God luft, rolig og faglig tone, mobilvenlig.\n\nByg først topbar, menu, forside og ét afsnit, så jeg kan se stilen. Derefter tager vi ét afsnit ad gangen."}],
+   eksempel:{tekst:"Se et eksempel på stilen i prompt B: Konjunkturvurdering", url:"https://konjunkturvurdering.netlify.app/#intro"},
+   tip:"Dine egne slides må gerne bruges, så længe de ikke indeholder oplysninger om studerende.",
+   videre:"Lav en skabelon, som kolleger kan genbruge til deres egne forløb."},
+  {id:"3.6", n:3, titel:"Interaktiv case med valg", min:75, tid:"60–90 min", output:"Interaktiv webside", vaerktoej:"Claude, ChatGPT eller Gemini", ny:"Ny opgave",
+   maal:"De studerende træffer beslutninger i en realistisk case og ser konsekvenserne af deres valg, før de får feedback koblet til teorien.",
+   trin:["Tag casen fra opgave 1.3 eller en ny problemstilling, og læg 3 beslutningspunkter med 2–3 valg hver. Beslutningerne kommer i samme rækkefølge uanset valg; valgene ændrer nøgletal og tekst, ikke rækkefølgen.","Bed om en side, hvor hvert valg fører videre i historien og flytter 2–3 nøgletal, f.eks. omsætning, kundetilfredshed og budget.","Spil mindst tre forskellige veje igennem, og ret valg, hvor konsekvensen er fagligt urimelig. Tilføj en slutskærm med feedback."],
+   prompt:"Byg en interaktiv case som én HTML-side på dansk til studerende på [markedsføringsøkonom- eller serviceøkonomuddannelsen]. Casen: [kort beskrivelse af virksomhed og problem]. Den studerende er [rolle, f.eks. nyansat marketingchef] og træffer 3 beslutninger med 2–3 valgmuligheder hver. Hvert valg ændrer nøgletallene [omsætning, kundetilfredshed, budget] og fører videre i historien. Beslutningerne kommer i samme rækkefølge uanset valg; valgene ændrer kun nøgletal og tekst. Vis nøgletallene som målere øverst. Slut med en skærm, der opsummerer valgene og giver feedback med henvisning til [teori eller model]. Tilføj en knap til at spille igen.",
+   videre:"Lad de studerende spille casen i grupper og forsvare deres valg i plenum."}
+];
+
+const SPILLEREGLER = [
+  "Brug aldrig navne, CPR-numre, karakterer eller besvarelser fra rigtige studerende. Lav fiktive eksempler i stedet.",
+  "Brug Danias Copilot, hvis du arbejder med interne dokumenter, der ikke er offentlige.",
+  "Tjek altid fagligt indhold. AI kan opfinde kilder, tal og paragraffer.",
+  "Gem dine bedste prompts. Dem deler vi til sidst."
+];
+const RKMF = [
+  ["R","Rolle","\"Du er underviser på markedsføringsøkonomuddannelsen\""],
+  ["K","Kontekst","hold, semester, forudsætninger"],
+  ["M","Mål","hvad skal de studerende kunne bagefter"],
+  ["F","Format","længde, opbygning, filtype"]
+];
+const OPSAMLING = ["Hvad lavede du, som du vil bruge i din undervisning inden for de næste 2 uger?","Hvor tog AI fejl, og hvordan opdagede du det?","Hvad vil du lære næste gang?"];
+const TJEKLISTE = [
+  "Alle har login til mindst ét værktøj inden dagen (tjek især Copilot-adgang via Dania)",
+  "Siden er delt, så alle kan åbne den fra start",
+  "Erfarne kolleger er udpeget som \"hjælpere\" ved bordene på niveau 1",
+  "Et fælles sted til at dele prompts og resultater er oprettet",
+  "Tid til pause og til at skifte opgave er lagt ind i programmet",
+  "Opfølgning er aftalt, f.eks. en kort runde på næste teammøde"
+];
+
+</script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const FARVE={1:["var(--h1)","var(--h1-l)"],2:["var(--h2)","var(--h2-l)"],3:["var(--h3)","var(--h3-l)"]};
+const fin=id=>OPGAVER.find(o=>o.id===id);
+const promptsAf=o=>o.prompts&&o.prompts.length?o.prompts:[{navn:"Startprompt",tekst:o.prompt}];
+function hent(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
+function gem(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+const PIL=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>`;
+
+$("#antalVarer").textContent=`${OPGAVER.length} opgaver`;
+$("#lead").textContent=`${OPGAVER.length} opgaver på tre niveauer. Vælg en opgave, der passer til dit niveau, og gå i gang. Har du din egen opgave med, så start med den, og kom herind, når du vil prøve noget nyt.`;
+$("#hylderOversigt").innerHTML=NIVEAUER.map(n=>`<div style="--hc:${FARVE[n.n][0]}"><b>${n.n}</b><span><strong>${esc(n.navn)}</strong>: til dig, der ${esc(n.til)}</span><small>${esc(n.tid)} · ${esc(n.output)}</small></div>`).join("")+
+  `<p style="margin:6px 0 0;font-size:.9rem">Start på det niveau, hvor du er tryg, og gå et niveau op, når du er færdig. Ret startprompten til dit eget fag, og bed AI om at forbedre resultatet mindst to gange.</p>`;
+$("#regler").innerHTML=SPILLEREGLER.map(r=>`<li>${esc(r)}</li>`).join("");
+$("#rkmf").innerHTML=RKMF.map(([b,o,f])=>`<div><b>${esc(b)}</b><strong>${esc(o)}</strong><span>${esc(f)}</span></div>`).join("");
+$("#opsamling").innerHTML=OPSAMLING.map(r=>`<li>${esc(r)}</li>`).join("");
+let tjek=hent("aiplayshop-a.tjek",[]);
+$("#tjekliste").innerHTML=TJEKLISTE.map((t,i)=>`<li><input type="checkbox" id="tj${i}" ${tjek.includes(i)?"checked":""}><label for="tj${i}">${esc(t)}</label></li>`).join("");
+$("#tjekliste").addEventListener("change",e=>{const i=+e.target.id.slice(2);tjek=e.target.checked?[...new Set([...tjek,i])]:tjek.filter(x=>x!==i);gem("aiplayshop-a.tjek",tjek);});
+
+let filter="alle";
+function tegnFaner(){
+  const f=[["alle","Alle"," niveauer",""],...NIVEAUER.map(n=>[String(n.n),String(n.n),"· "+n.navn,FARVE[n.n][0]])];
+  $("#faner").innerHTML=f.map(([k,t,l,c])=>`<button class="fane" data-filter="${k}" aria-pressed="${filter===k}">${c?`<span class="prik" style="background:${c}" aria-hidden="true"></span>`:""}<span>${esc(t)}<span class="lang">${l.startsWith(" ")?esc(l):" "+esc(l)}</span></span></button>`).join("");
+}
+$("#faner").addEventListener("click",e=>{const b=e.target.closest("[data-filter]");if(!b)return;filter=b.dataset.filter;tegnFaner();tegnHylder();});
+
+function linje(o){
+  const [hc,hl]=FARVE[o.n];
+  const m=o.ny?`<span class="maerke ${o.ny==="Ny opgave"?"":"opd"}">${o.ny==="Ny opgave"?"Nyhed":"Opdateret"}</span>`:"";
+  const n=promptsAf(o).length;
+  return `<li class="vare" style="--hc:${hc};--hl:${hl}">
+    <span class="nr" aria-hidden="true">${o.id}</span>
+    <h3><button class="aabn" data-aabn="${o.id}"><span class="sr">Opgave ${o.id}: </span>${esc(o.titel)}</button>${m}</h3>
+    <p class="maal">${esc(o.maal)}</p>
+    <div class="fakta"><span>${esc(o.output)}</span><span>${esc(o.vaerktoej)}</span>${n>1?`<span class="flere">${n} prompts</span>`:""}</div>
+    <div class="slut"><span class="tid">${esc(o.tid)}</span><span class="se" aria-hidden="true">Se opgaven ${PIL}</span></div>
+  </li>`;
+}
+function tegnHylder(){
+  const vis=NIVEAUER.filter(n=>filter==="alle"||String(n.n)===filter);
+  $("#hylder").innerHTML=vis.map(n=>{
+    const [hc,hl]=FARVE[n.n];
+    return `<section class="hylde" id="hylde-${n.n}" style="--hc:${hc};--hl:${hl}" aria-labelledby="hh${n.n}">
+      <div class="hylde-top"><span class="stortal" aria-hidden="true">${n.n}</span><span class="etiket" style="color:${hc}">${esc(n.hylde)} · ${esc(n.tid)}</span><h2 id="hh${n.n}">${esc(n.navn)}</h2><p class="meta">${esc(n.intro)}</p></div>
+      ${n.tip?`<p class="tip"><strong>Tip til hele niveauet:</strong> ${esc(n.tip)}</p>`:""}
+      <ul class="liste">${OPGAVER.filter(o=>o.n===n.n).map(linje).join("")}</ul>
+    </section>`;
+  }).join("");
+}
+
+function tegnVare(id){
+  const o=fin(id);const [hc,hl]=FARVE[o.n];const n=NIVEAUER.find(x=>x.n===o.n);
+  const ark=$("#vareArk");ark.style.setProperty("--hc",hc);ark.style.setProperty("--hl",hl);
+  $("#vareEtiket").textContent=`${o.id} · ${n.hylde}: ${n.navn}`;$("#vareEtiket").style.color=hc;
+  $("#vareTitel").textContent=o.titel;
+  let videre=esc(o.videre);
+  (o.ref||[]).forEach(r=>{videre=videre.replace(new RegExp(`(opgave |Opgave )${r.replace(".","\\.")}`),`$1<button data-aabn="${r}">${r}</button>`);});
+  const ps=promptsAf(o);
+  $("#vareKrop").innerHTML=`
+    <div class="faktalinje"><span class="t">${esc(o.tid)}</span><span>${esc(o.output)}</span><span>${esc(o.vaerktoej)}</span></div>
+    <div><h3>Mål</h3><p>${esc(o.maal)}</p></div>
+    <div><h3>Sådan gør du</h3><ol>${o.trin.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></div>
+    ${ps.map((p,i)=>`<div class="prompt-blok"><div class="prompt-top"><h3 id="ph${i}">${esc(p.navn)}</h3><button class="btn" data-kopier="${i}" aria-describedby="ph${i}">Kopiér prompt</button></div><div class="prompt">${esc(p.tekst)}</div></div>`).join("")}
+    <p style="font-size:.85rem;color:var(--muted);margin-top:-8px">Udskift det i [klammer] med dit eget fag og hold.</p>
+    ${o.eksempel?`<p><a class="eksempel" href="${esc(o.eksempel.url)}" target="_blank" rel="noopener">${esc(o.eksempel.tekst)} ${PIL}</a></p>`:""}
+    ${o.tip?`<p class="tip" style="margin:0"><strong>Godt at vide:</strong> ${esc(o.tip)}</p>`:""}
+    <div class="videre"><strong>Videre:</strong> ${videre}</div>`;
+}
+let aabenVare=null,sidstFokus=null;
+function saetInert(on){document.querySelectorAll("body > .wrap, body > .bar, body > main").forEach(el=>{el.inert=on;});}
+function aabnVare(id){
+  const ark=$("#vareArk");
+  if(!aabenVare)sidstFokus=document.activeElement;
+  aabenVare=id;tegnVare(id);
+  ark.hidden=false;void ark.offsetWidth;requestAnimationFrame(()=>{ark.classList.add("aaben");$("#slor").classList.add("aaben");});
+  document.body.style.overflow="hidden";saetInert(true);
+  $("#vareKrop").scrollTop=0;
+  setTimeout(()=>$("#luk").focus(),60);
+}
+function luk(){
+  if(!aabenVare)return;
+  const id=aabenVare;aabenVare=null;
+  const ark=$("#vareArk");ark.classList.remove("aaben");setTimeout(()=>{if(!ark.classList.contains("aaben"))ark.hidden=true;},260);
+  $("#slor").classList.remove("aaben");document.body.style.overflow="";saetInert(false);
+  const maal=(sidstFokus&&document.contains(sidstFokus))?sidstFokus:document.querySelector(`#hylder [data-aabn="${id}"]`);
+  maal?.focus();
+}
+
+async function kopier(tekst,besked){
+  try{await navigator.clipboard.writeText(tekst);toast(besked);}
+  catch(e){
+    const ta=document.createElement("textarea");ta.value=tekst;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
+    let ok=false;try{ok=document.execCommand("copy");}catch(_){}
+    ta.remove();toast(ok?besked:"Kunne ikke kopiere. Markér teksten, og kopiér den selv.");
+  }
+}
+let tt;function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("vis");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("vis"),2200);}
+
+document.addEventListener("click",e=>{
+  const a=e.target.closest("[data-aabn]");if(a){aabnVare(a.dataset.aabn);return;}
+  const c=e.target.closest("[data-kopier]");if(c&&aabenVare){const p=promptsAf(fin(aabenVare))[+c.dataset.kopier];kopier(p.tekst,`${p.navn} er kopieret`);return;}
+  if(e.target.closest("#luk")||e.target.id==="slor"){luk();return;}
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){luk();return;}
+  if(e.key!=="Tab"||!aabenVare)return;
+  const ark=$("#vareArk");
+  const f=[...ark.querySelectorAll("button,a[href]")].filter(x=>!x.disabled&&x.offsetParent);
+  if(!f.length)return;const forste=f[0],sidste=f[f.length-1];
+  if(!ark.contains(document.activeElement)){e.preventDefault();forste.focus();}
+  else if(e.shiftKey&&document.activeElement===forste){e.preventDefault();sidste.focus();}
+  else if(!e.shiftKey&&document.activeElement===sidste){e.preventDefault();forste.focus();}
+});
+
+tegnFaner();tegnHylder();
+</script>
+</body>
+</html>
