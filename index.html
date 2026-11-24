@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-/* Kataloget: Swiss prisliste. Én opgave pr. linje, tiden står som pris, hele linjen åbner opgaven. */
+/* Kataloget: Swiss katalog. Én opgave pr. linje, tiden står til højre, hele linjen åbner opgaven. */
 :root{
   --bg:#f3f4f6; --surface:#ffffff; --fg:#111318; --muted:#4b5160; --line:#d5d8de;
   --accent:#c2410c; --on-accent:#ffffff; --focus:#1d4ed8;
@@ -161,13 +161,13 @@ footer{color:var(--muted);font-size:.85rem;padding-bottom:40px}
   <div class="katalog-hoved">
     <div class="kat-linje"><span>Katalog nr. 1 · AI-eftermiddag</span><span>Markedsføringsøkonom og Serviceøkonom · Dania</span></div>
     <h1>AI play shop</h1>
-    <div class="stempel"><span id="antalVarer">18 opgaver</span><span>3 hylder</span><span>Prisen er tid</span></div>
+    <div class="stempel"><span id="antalVarer">18 opgaver</span><span>3 niveauer</span></div>
     <p class="lead" id="lead"></p>
   </div>
 </header></div>
 
-<nav class="bar" aria-label="Hylder">
-  <div class="wrap"><div class="faner" id="faner" role="group" aria-label="Vis hylde"></div></div>
+<nav class="bar" aria-label="Niveauer">
+  <div class="wrap"><div class="faner" id="faner" role="group" aria-label="Vis niveau"></div></div>
 </nav>
 
 <main class="wrap">
@@ -196,11 +196,11 @@ footer{color:var(--muted);font-size:.85rem;padding-bottom:40px}
 <script>
 // Poul (skribent): alt indhold. Bygger på "AI-eftermiddag: Opgavebank i tre niveauer" (29.10) med Arnes justeringer.
 const NIVEAUER = [
-  {n:1, navn:"Kom godt i gang", hylde:"Hylde 1", til:"har brugt AI lidt eller slet ikke", tid:"15–30 min", output:"Tekst, plan, quiz, case, infografik",
+  {n:1, navn:"Kom godt i gang", hylde:"Niveau 1", til:"har brugt AI lidt eller slet ikke", tid:"15–30 min", output:"Tekst, plan, quiz, case, infografik",
    intro:"Her bliver du tryg ved at skrive til AI, vurdere svaret og bede om forbedringer. Det meste foregår i chatten, og det, du får ud, kan du kopiere videre."},
-  {n:2, navn:"Øvet", hylde:"Hylde 2", til:"bruger AI jævnligt i chatten", tid:"30–60 min", output:"Dokument, regneark, rollespil, transskription",
+  {n:2, navn:"Øvet", hylde:"Niveau 2", til:"bruger AI jævnligt i chatten", tid:"30–60 min", output:"Dokument, regneark, rollespil, transskription",
    intro:"Her arbejder du med dine egne materialer, flere runder af forbedring og output i rigtige filformater."},
-  {n:3, navn:"Avanceret", hylde:"Hylde 3", til:"vil bygge noget, de studerende kan bruge", tid:"60–120 min", output:"Interaktiv webside, spil, simulation",
+  {n:3, navn:"Avanceret", hylde:"Niveau 3", til:"vil bygge noget, de studerende kan bruge", tid:"60–120 min", output:"Interaktiv webside, spil, simulation",
    intro:"Her bygger du interaktive ressourcer, som de studerende bruger direkte i browseren. Du skal ikke kunne kode. Du skal kunne beskrive præcist, hvad du vil have, teste og give AI fejlbeskrivelser tilbage.",
    tip:"Claude (artifacts), ChatGPT (Canvas) og Gemini (Canvas) kan vise websider direkte i chatten. Byg i små skridt: først en simpel version, så én forbedring ad gangen. Beskriv fejl konkret: \"Når jeg sætter renten til 0, viser grafen ingenting.\""}
 ];
@@ -268,7 +268,7 @@ const OPGAVER = [
    trin:["Medbring en optagelse på 10–15 minutter. Åbn Word på nettet i Edge eller Chrome. Vælg Hjem > pilen ved Diktér > Transskriber, vælg dansk som sprog, og upload en lydfil (.mp3, .m4a, .wav eller .mp4) eller optag direkte.","Ret talernavnene i ruden, og vælg Tilføj til dokument, med eller uden talere og tidsstempler.","Kopiér teksten ind i Copilot Chat (eller brug Copilot i Word, hvis du har licens), og rens den med startprompten. Sammenlign med optagelsen 2–3 steder, især ved fagord og tal."],
    prompt:"Her er en automatisk transskription af [en forelæsning om emne]. Rens teksten: fjern fyldord, gentagelser og afbrudte sætninger, ret fejlhørte fagord (emnet er [emne], så forvent begreber som [begreb 1, begreb 2]), og del teksten i afsnit med overskrifter. Behold talerens betydning og formuleringer, hvor det er muligt. Markér med [?] de steder, hvor du er usikker. Lav til sidst et resumé på 5 punkter og 3 studiespørgsmål.",
    tip:"Brug din Dania-konto: lydfilen gemmes i din OneDrive i mappen Transcribed Files. Optag ikke studerende uden samtykke. Med en Microsoft 365-konto kan du uploade 300 minutter om måneden.",
-   videre:"Brug den rensede tekst som materiale i opgave 2.2, eller gå op på hylde 3.", ref:["2.2"]},
+   videre:"Brug den rensede tekst som materiale i opgave 2.2, eller gå op på niveau 3.", ref:["2.2"]},
 
   {id:"3.1", n:3, titel:"Låneberegner", min:60, tid:"60 min", output:"Interaktiv webside", vaerktoej:"Claude, ChatGPT eller Gemini",
    maal:"De studerende kan se, hvordan rente, løbetid og lånetype påvirker ydelse og samlede renteomkostninger.",
@@ -321,7 +321,7 @@ const OPSAMLING = ["Hvad lavede du, som du vil bruge i din undervisning inden fo
 const TJEKLISTE = [
   "Alle har login til mindst ét værktøj inden dagen (tjek især Copilot-adgang via Dania)",
   "Siden er delt, så alle kan åbne den fra start",
-  "Erfarne kolleger er udpeget som \"hjælpere\" ved bordene på hylde 1",
+  "Erfarne kolleger er udpeget som \"hjælpere\" ved bordene på niveau 1",
   "Et fælles sted til at dele prompts og resultater er oprettet",
   "Tid til pause og til at skifte opgave er lagt ind i programmet",
   "Opfølgning er aftalt, f.eks. en kort runde på næste teammøde"
@@ -339,9 +339,9 @@ function gem(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 const PIL=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>`;
 
 $("#antalVarer").textContent=`${OPGAVER.length} opgaver`;
-$("#lead").textContent=`${OPGAVER.length} opgaver på tre hylder. Vælg en opgave, der passer til dit niveau, og gå i gang. Prisen er tiden. Har du din egen opgave med, så start med den, og kom herind, når du vil prøve noget nyt.`;
+$("#lead").textContent=`${OPGAVER.length} opgaver på tre niveauer. Vælg en opgave, der passer til dit niveau, og gå i gang. Har du din egen opgave med, så start med den, og kom herind, når du vil prøve noget nyt.`;
 $("#hylderOversigt").innerHTML=NIVEAUER.map(n=>`<div style="--hc:${FARVE[n.n][0]}"><b>${n.n}</b><span><strong>${esc(n.navn)}</strong>: til dig, der ${esc(n.til)}</span><small>${esc(n.tid)} · ${esc(n.output)}</small></div>`).join("")+
-  `<p style="margin:6px 0 0;font-size:.9rem">Start på den hylde, hvor du er tryg, og gå en hylde op, når du er færdig. Ret startprompten til dit eget fag, og bed AI om at forbedre resultatet mindst to gange.</p>`;
+  `<p style="margin:6px 0 0;font-size:.9rem">Start på det niveau, hvor du er tryg, og gå et niveau op, når du er færdig. Ret startprompten til dit eget fag, og bed AI om at forbedre resultatet mindst to gange.</p>`;
 $("#regler").innerHTML=SPILLEREGLER.map(r=>`<li>${esc(r)}</li>`).join("");
 $("#rkmf").innerHTML=RKMF.map(([b,o,f])=>`<div><b>${esc(b)}</b><strong>${esc(o)}</strong><span>${esc(f)}</span></div>`).join("");
 $("#opsamling").innerHTML=OPSAMLING.map(r=>`<li>${esc(r)}</li>`).join("");
@@ -351,7 +351,7 @@ $("#tjekliste").addEventListener("change",e=>{const i=+e.target.id.slice(2);tjek
 
 let filter="alle";
 function tegnFaner(){
-  const f=[["alle","Alle"," hylder",""],...NIVEAUER.map(n=>[String(n.n),String(n.n),"· "+n.navn,FARVE[n.n][0]])];
+  const f=[["alle","Alle"," niveauer",""],...NIVEAUER.map(n=>[String(n.n),String(n.n),"· "+n.navn,FARVE[n.n][0]])];
   $("#faner").innerHTML=f.map(([k,t,l,c])=>`<button class="fane" data-filter="${k}" aria-pressed="${filter===k}">${c?`<span class="prik" style="background:${c}" aria-hidden="true"></span>`:""}<span>${esc(t)}<span class="lang">${l.startsWith(" ")?esc(l):" "+esc(l)}</span></span></button>`).join("");
 }
 $("#faner").addEventListener("click",e=>{const b=e.target.closest("[data-filter]");if(!b)return;filter=b.dataset.filter;tegnFaner();tegnHylder();});
@@ -374,7 +374,7 @@ function tegnHylder(){
     const [hc,hl]=FARVE[n.n];
     return `<section class="hylde" id="hylde-${n.n}" style="--hc:${hc};--hl:${hl}" aria-labelledby="hh${n.n}">
       <div class="hylde-top"><span class="stortal" aria-hidden="true">${n.n}</span><span class="etiket" style="color:${hc}">${esc(n.hylde)} · ${esc(n.tid)}</span><h2 id="hh${n.n}">${esc(n.navn)}</h2><p class="meta">${esc(n.intro)}</p></div>
-      ${n.tip?`<p class="tip"><strong>Tip til hele hylden:</strong> ${esc(n.tip)}</p>`:""}
+      ${n.tip?`<p class="tip"><strong>Tip til hele niveauet:</strong> ${esc(n.tip)}</p>`:""}
       <ul class="liste">${OPGAVER.filter(o=>o.n===n.n).map(linje).join("")}</ul>
     </section>`;
   }).join("");

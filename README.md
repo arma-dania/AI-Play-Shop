@@ -2,7 +2,7 @@
 
 Opgavekatalog til AI-eftermiddagen for undervisere på Markedsføringsøkonom og Serviceøkonom, Dania.
 
-18 opgaver på tre hylder (Kom godt i gang, Øvet, Avanceret). Prisen er tiden. Hver opgave har mål, trin, en startprompt, der kan kopieres, og forslag til, hvor man går videre.
+18 opgaver på tre niveauer (Kom godt i gang, Øvet, Avanceret). Hver opgave har mål, trin, en startprompt, der kan kopieres, og forslag til, hvor man går videre.
 
 ## Brug
 
